@@ -1,0 +1,17 @@
+[project]
+name = "kafka"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "faker>=37.12.0",
+    "fastapi>=0.118.2",
+    "kafka-python>=2.2.15",
+    "memory-profiler>=0.61.0",
+    "psutil>=7.1.2",
+    "python-dotenv>=1.1.1",
+    "python-json-logger>=4.0.0",
+    "pyyaml>=6.0.3",
+    "uvicorn>=0.37.0",
+]

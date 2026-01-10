@@ -1,0 +1,24 @@
+logging_level: INFO
+logging:
+  version: 1
+  disable_existing_loggers: false
+  formatters:
+    json:
+      (): pythonjsonlogger.jsonlogger.JsonFormatter
+      format: "%(levelname)s %(asctime)s %(name)s %(message)s %(filename)s %(lineno)d"
+      rename_fields:
+        levelname: status
+      timestamp: true
+  handlers:
+    console:
+      class: logging.StreamHandler
+      formatter: json
+      stream: ext://sys.stdout
+  loggers:
+    kafka:
+      level: ERROR
+      handlers: [console]
+      propagate: false
+  root:
+    level: INFO
+    handlers: [console]
