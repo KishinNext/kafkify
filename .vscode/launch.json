@@ -19,7 +19,7 @@
             "name": "Run Main: Producer Server",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/main_producer.py",
+            "program": "${workspaceFolder}/src/examples/producer_example/main.py",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}",
             "env": {

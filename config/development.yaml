@@ -1,0 +1,16 @@
+secrets:
+  api_key: "your_api_key_here"
+kafka:
+  bootstrap_servers: "localhost:9092,localhost:9093,localhost:9094"
+  producer:
+    config:
+      client_id: "example-producer"
+      acks: "all"
+      request_timeout_ms: 40000
+      batch_size: 16384
+      linger_ms: 5
+      enable_idempotence: true
+  schema_registry:
+    url: "http://localhost:8081"
+    auth:
+      username: "schema_user

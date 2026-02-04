@@ -5,11 +5,16 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "aiokafka>=0.13.0",
+    "confluent-kafka>=2.13.0",
     "faker>=37.12.0",
     "fastapi>=0.118.2",
+    "fastavro>=1.12.1",
     "kafka-python>=2.2.15",
+    "locust>=2.43.1",
     "memory-profiler>=0.61.0",
     "psutil>=7.1.2",
+    "pydash>=8.0.5",
     "python-dotenv>=1.1.1",
     "python-json-logger>=4.0.0",
     "pyyaml>=6.0.3",

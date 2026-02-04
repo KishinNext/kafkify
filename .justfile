@@ -10,7 +10,7 @@ health-consumer:
 
 # Create people (send messages to topic)
 create-people NUMBER_OF_PEOPLE:
-  curl -s -X POST "http://localhost:8000/producers/basic_producer?number_of_people={{NUMBER_OF_PEOPLE}}" \
+  curl -s -X POST "http://localhost:8000/producers/person?number_of_people={{NUMBER_OF_PEOPLE}}" \
     -H "accept: application/json" | jq .
 
 # Get consumer status
