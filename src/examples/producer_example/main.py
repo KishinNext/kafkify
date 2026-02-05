@@ -4,15 +4,16 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import FastAPI
 
+from src.producers.infrastructure.adapters.base_producer_adapter import (
+    KafkaBaseProducerAdapter,
+)
+from src.producers.infrastructure.config.producer_settings import KafkaProducerConfig
 from src.examples.producer_example.entrypoints.api.routers.person_notifier_service import (
     router as person_notifier_router,
 )
-from producers.infrastructure.adapters.base_producer_adapter import (
-    KafkaProducerImpl,
-)
-from producers.infrastructure.config.producer_settings import KafkaProducerConfig
 from src.utils.access_config import config_manager
 from src.utils.logging import setup_logging
+from src.utils.serializers import default_serializer
 
 setup_logging()
 log = logging.getLogger(__name__)
@@ -35,9 +36,15 @@ async def lifespan(app: FastAPI):
         max_batch_size=producer_config.get("max_batch_size", 16384),
         linger_ms=producer_config.get("linger_ms", 5),
         enable_idempotence=producer_config.get("enable_idempotence", True),
+        retry_backoff_ms=producer_config.get("retry_backoff_ms", 100),
+        metadata_max_age_ms=producer_config.get("metadata_max_age_ms", 30000)
     )
 
-    producer = KafkaProducerImpl(config=producer_config)
+    producer = KafkaBaseProducerAdapter(
+        config=producer_config,
+        key_serializer=default_serializer,
+        value_serializer=default_serializer,
+    )
     await producer.start()
 
     app.state.producer = producer
@@ -62,5 +69,8 @@ async def health_check():
 
 if __name__ == "__main__":
     uvicorn.run(
-        app, host="0.0.0.0", port=8000, log_config=config_manager.get_property("logging")
+        app,
+        host="0.0.0.0",
+        port=8000,
+        log_config=config_manager.get_property("logging"),
     )

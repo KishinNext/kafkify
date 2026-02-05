@@ -5,6 +5,7 @@ from src.utils.access_config import config_manager
 
 
 def setup_logging():
+    """Sets up logging configuration from the config manager."""
     config = config_manager.get_property("logging")
     logging_level = config_manager.get_property("logging_level") or "INFO"
     root_logger = logging.getLogger("root")

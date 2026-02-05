@@ -10,7 +10,9 @@ kafka:
       batch_size: 16384
       linger_ms: 5
       enable_idempotence: true
+      retry_backoff_ms: 100
+      metadata_max_age_ms: 30000
   schema_registry:
     url: "http://localhost:8081"
     auth:
-      username: "schema_user
+      username: "schema_user"

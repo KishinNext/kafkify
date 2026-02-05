@@ -43,13 +43,11 @@ class ConsumerManager(BaseConsumer):
         key_deserializer: Optional[Callable] = None,
         value_deserializer: Optional[Callable] = None,
     ):
-        self.config = config
-        self._consumer: Optional[AIOKafkaConsumer] = None
-        self._key_deserializer = key_deserializer
-        self._value_deserializer = value_deserializer
-        self._running = False
-        self.rebalance_in_progress = False
+        super().__init__(config, key_deserializer, value_deserializer)
 
+        self._consumer: Optional[AIOKafkaConsumer] = None
+        self._running = False
+        self._rebalance_in_progress = False
         self._handlers: Dict[str, Dict[str, Handler]] = defaultdict(dict)
         self._topics: Set[str] = set()
 
@@ -123,12 +121,12 @@ class ConsumerManager(BaseConsumer):
                 exc_info=True,
                 extra={"partition": msg.partition, "offset": msg.offset},
             )
-            self.rebalance_in_progress = True
+            self._rebalance_in_progress = True
 
     async def _process_message(self, msg: ConsumerRecord):
         """Processes a single message by dispatching it to relevant handlers."""
 
-        if self.rebalance_in_progress:
+        if self._rebalance_in_progress:
             log.warning("Rebalance in progress, skipping message processing.")
             return
 
@@ -158,7 +156,7 @@ class ConsumerManager(BaseConsumer):
                 e,
                 extra={"partition": msg.partition, "offset": msg.offset},
             )
-            self.rebalance_in_progress = True  # Signal rebalance
+            self._rebalance_in_progress = True  # Signal rebalance
             return
         except Exception as e:
             log.error(
@@ -179,7 +177,7 @@ class ConsumerManager(BaseConsumer):
         log.info("Consumer is now listening for messages...")
         try:
             while self._running:
-                if self.rebalance_in_progress:
+                if self._rebalance_in_progress:
                     log.warning("Rebalance in progress, pausing message fetching.")
                     await asyncio.sleep(1)
                     continue
@@ -191,9 +189,9 @@ class ConsumerManager(BaseConsumer):
                             continue
                         for msg in messages:
                             await self._process_message(msg)
-                            if self.rebalance_in_progress:
+                            if self._rebalance_in_progress:
                                 break
-                        if self.rebalance_in_progress:
+                        if self._rebalance_in_progress:
                             break
 
                 except Exception:

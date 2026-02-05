@@ -1,19 +1,28 @@
-import json
 import logging
-from typing import Any, Dict, Optional, Union
+from typing import Callable, Optional
 
 from aiokafka import AIOKafkaProducer
 from aiokafka.errors import KafkaError
 
-from src.producers.domain.ports.producer import BaseProducer as PortProducer
-from producers.infrastructure.config.producer_settings import KafkaProducerConfig
+from src.producers.domain.ports.base_producer import (
+    BaseProducer,
+    SerializableKey,
+    SerializableValue,
+)
+from src.producers.infrastructure.config.producer_settings import KafkaProducerConfig
 
 log = logging.getLogger(__name__)
 
 
-class KafkaProducerImpl(PortProducer):
-    def __init__(self, config: KafkaProducerConfig):
-        self.config = config
+class KafkaBaseProducerAdapter(BaseProducer):
+    def __init__(
+        self,
+        config: KafkaProducerConfig,
+        key_serializer: Optional[Callable] = None,
+        value_serializer: Optional[Callable] = None,
+    ):
+        super().__init__(config, key_serializer, value_serializer)
+
         self._producer: Optional[AIOKafkaProducer] = None
 
     async def start(self) -> None:
@@ -29,7 +38,19 @@ class KafkaProducerImpl(PortProducer):
             max_batch_size=self.config.max_batch_size,
             linger_ms=self.config.linger_ms,
             enable_idempotence=self.config.enable_idempotence,
-            value_serializer=self._default_serializer,
+            value_serializer=self._value_deserializer,
+            key_serializer=self._key_deserializer,
+            **self.config.model_dump(
+                exclude={
+                    "bootstrap_servers",
+                    "client_id",
+                    "acks",
+                    "request_timeout_ms",
+                    "max_batch_size",
+                    "linger_ms",
+                    "enable_idempotence",
+                }
+            ),
         )
         await self._producer.start()
         log.debug("Kafka Producer started successfully.")
@@ -44,21 +65,19 @@ class KafkaProducerImpl(PortProducer):
     async def send(
         self,
         topic: str,
-        value: Union[Dict[str, Any], str, bytes],
-        key: Optional[str] = None,
+        value: SerializableValue,
+        key: SerializableKey = None,
     ) -> None:
         if not self._producer:
             raise RuntimeError(
                 "The producer is not started. Call 'start()' before sending messages."
             )
 
-        key_bytes = key.encode("utf-8") if key else None
-
         try:
             await self._producer.send_and_wait(
                 topic=topic,
                 value=value,
-                key=key_bytes,
+                key=key,
             )
 
             log.debug(
@@ -69,9 +88,9 @@ class KafkaProducerImpl(PortProducer):
             )
             return True
 
-        except KafkaError:
+        except KafkaError as e:
             log.error(
-                "Errot to send message to Kafka",
+                f"Kafka error fatal: {e._get_error_name()}",
                 exc_info=True,
                 extra={"topic": topic, "key": key},
             )
@@ -83,18 +102,6 @@ class KafkaProducerImpl(PortProducer):
                 extra={"topic": topic, "key": key},
             )
             raise Exception("Unexpected error when sending message to Kafka")
-
-    def _default_serializer(self, value: Any) -> bytes:
-        if isinstance(value, dict):
-            return json.dumps(value).encode("utf-8")
-        elif isinstance(value, str):
-            return value.encode("utf-8")
-        elif isinstance(value, bytes):
-            return value
-        return str(value).encode("utf-8")
-
-    def status(self):
-        return "started" if self._producer else "stopped"
 
     async def __aenter__(self):
         await self.start()

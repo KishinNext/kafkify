@@ -1,20 +1,17 @@
-import asyncio
 import logging
-import random
 import uuid
-from http.client import HTTPResponse
 from typing import List
 
 from faker import Faker
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
 
+from src.producers.infrastructure.adapters.base_producer_adapter import (
+    KafkaBaseProducerAdapter,
+)
 from src.examples.producer_example.domain.person import Person
 from src.examples.producer_example.entrypoints.api.dependencies import (
     get_kafka_producer,
-)
-from producers.infrastructure.adapters.base_producer_adapter import (
-    KafkaProducerImpl,
 )
 
 log = logging.getLogger(__name__)
@@ -25,7 +22,7 @@ router = APIRouter(prefix="/producers", tags=["producers"])
 @router.post("/person", response_model=List[Person], status_code=201)
 async def basic_producer(
     number_of_people: int = Query(default=10),
-    kafka_producer: KafkaProducerImpl = Depends(get_kafka_producer),
+    kafka_producer: KafkaBaseProducerAdapter = Depends(get_kafka_producer),
 ):
     people: List[Person] = []
     try:
@@ -50,8 +47,7 @@ async def basic_producer(
             )
             people.append(person)
         return JSONResponse(
-            status_code=201, 
-            content=[person.model_dump() for person in people]
+            status_code=201, content=[person.model_dump() for person in people]
         )
     except Exception as e:
         log.error(
