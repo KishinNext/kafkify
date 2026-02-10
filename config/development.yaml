@@ -12,6 +12,14 @@ kafka:
       enable_idempotence: true
       retry_backoff_ms: 100
       metadata_max_age_ms: 30000
+  consumer:
+    config:
+      group_id: "example-consumer-group"
+      auto_offset_reset: "earliest"
+      enable_auto_commit: false
+      auto_offset_reset: "earliest"
+      isolation_level: "read_committed"
+      max_poll_interval_ms: 300000
   schema_registry:
     url: "http://localhost:8081"
     auth:
