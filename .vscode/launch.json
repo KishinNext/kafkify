@@ -30,7 +30,7 @@
             "name": "Run Main: Consumer Server",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/main_consumer.py",
+            "program": "${workspaceFolder}/src/examples/consumer_example/main.py",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}",
             "env": {

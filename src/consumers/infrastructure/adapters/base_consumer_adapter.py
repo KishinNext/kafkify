@@ -28,10 +28,10 @@ class Handler:
 
     func: Callable[[ConsumerRecord], Coroutine]
     topic: str
-    codes: Optional[List[str]] = field(default_for_factory=list)
+    codes: Optional[List[str]] = field(default_factory=list)
 
 
-class ConsumerManager(BaseConsumer):
+class KafkaBaseConsumerAdapter(BaseConsumer):
     """
     Manages Kafka consumption, handling multiple topics and dynamically
     dispatching messages to registered handlers.
@@ -64,8 +64,19 @@ class ConsumerManager(BaseConsumer):
         topic = config.get("topic")
         codes = config.get("codes", [])
 
-        def decorator(func: Callable[[ConsumerRecord], Coroutine]):
-            handler = Handler(func=func, topic=topic, codes=codes)
+        if topic:
+            self._topics.add(topic)
+
+        def decorator(func: Callable[..., Coroutine]):
+
+            if isinstance(codes, str):
+                codes_list = [codes]
+            elif isinstance(codes, list):
+                codes_list = codes
+            else:
+                codes_list = []
+
+            handler = Handler(func=func, topic=topic, codes=codes_list)
 
             if not codes:
                 """ Default case: No specific codes, register for all messages on the topic """
@@ -123,7 +134,7 @@ class ConsumerManager(BaseConsumer):
             )
             self._rebalance_in_progress = True
 
-    async def _process_message(self, msg: ConsumerRecord):
+    async def _process_message(self, msg: ConsumerRecord, **kwargs):
         """Processes a single message by dispatching it to relevant handlers."""
 
         if self._rebalance_in_progress:
@@ -144,7 +155,7 @@ class ConsumerManager(BaseConsumer):
             return
 
         try:
-            await handler.func(msg)
+            await handler.func(msg, **kwargs)
             await self._commit_offset(msg)
         except (
             CommitFailedError,
@@ -168,7 +179,7 @@ class ConsumerManager(BaseConsumer):
             )
             return
 
-    async def listen(self):
+    async def listen(self, **kwargs):
         """The main consumer loop that fetches and processes messages."""
         if not self._running or not self._consumer:
             log.error("Consumer is not running. Call start() before listening.")
@@ -188,7 +199,7 @@ class ConsumerManager(BaseConsumer):
                         if tp not in self._consumer.assignment():
                             continue
                         for msg in messages:
-                            await self._process_message(msg)
+                            await self._process_message(msg, **kwargs)
                             if self._rebalance_in_progress:
                                 break
                         if self._rebalance_in_progress:
@@ -209,7 +220,7 @@ class ConsumerManager(BaseConsumer):
             log.info("Stopping consumer manager...")
             await self._consumer.stop()
             self._consumer = None
-            log.info("👋 Consumer manager stopped.")
+            log.info("Consumer manager stopped.")
 
     async def __aenter__(self):
         """Enables usage with 'async with' statement."""

@@ -25,7 +25,7 @@ class RebalanceHandler(ConsumerRebalanceListener):
         Sets the 'rebalance_in_progress' flag to True.
         """
         log.warning(f"Rebalance detected: Revoking partitions {revoked}")
-        self.consumer_manager.rebalance_in_progress = True
+        self.consumer_manager._rebalance_in_progress = True
 
     async def on_partitions_assigned(self, assigned):
         """
@@ -33,4 +33,4 @@ class RebalanceHandler(ConsumerRebalanceListener):
         Sets the 'rebalance_in_progress' flag to False.
         """
         log.info(f"Rebalance detected: Assigned partitions {assigned}")
-        self.consumer_manager.rebalance_in_progress = False
+        self.consumer_manager._rebalance_in_progress = False
