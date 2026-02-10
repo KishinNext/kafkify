@@ -1,0 +1,6 @@
+site_name: Mi Librería Kafka
+theme:
+  name: material
+
+plugins:
+  - mkdocstrings

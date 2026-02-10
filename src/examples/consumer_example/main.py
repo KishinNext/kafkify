@@ -36,6 +36,7 @@ async def lifespan(app: FastAPI):
         auto_offset_reset=consumer_config.get("auto_offset_reset", "earliest"),
         isolation_level=consumer_config.get("isolation_level", "read_committed"),
         max_poll_interval_ms=consumer_config.get("max_poll_interval_ms", 300000),
+        retry_backoff_ms=consumer_config.get("retry_backoff_ms", 2000),
     )
 
     consumer = KafkaBaseConsumerAdapter(

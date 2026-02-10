@@ -20,6 +20,7 @@ kafka:
       auto_offset_reset: "earliest"
       isolation_level: "read_committed"
       max_poll_interval_ms: 300000
+      retry_backoff_ms: 2000
   schema_registry:
     url: "http://localhost:8081"
     auth:

@@ -113,6 +113,7 @@ class KafkaBaseConsumerAdapter(BaseConsumer):
             key_deserializer=self._key_deserializer,
             value_deserializer=self._value_deserializer,
             max_poll_interval_ms=self.config.max_poll_interval_ms,
+            retry_backoff_ms=self.config.retry_backoff_ms,
         )
         await self._consumer.start()
 

@@ -20,3 +20,6 @@ class KafkaConsumerConfig(BaseModel):
     max_poll_interval_ms: int = Field(
         default=300000, description="Maximum delay between invocations of poll()."
     )
+    retry_backoff_ms: int = Field(
+        default=2000, description="Time to wait before retrying a failed fetch."
+    )

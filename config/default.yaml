@@ -15,7 +15,7 @@ logging:
       formatter: json
       stream: ext://sys.stdout
   loggers:
-    kafka:
+    aiokafka:
       level: ERROR
       handlers: [console]
       propagate: false
