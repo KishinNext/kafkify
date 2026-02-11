@@ -51,7 +51,9 @@ class KafkaBaseConsumerAdapter(BaseConsumer):
         self._handlers: Dict[str, Dict[str, Handler]] = defaultdict(dict)
         self._topics: Set[str] = set()
 
-    def get(self, config: Dict[str, str | list[str]]):
+    def get(
+        self, config: Dict[str, str | list[str]]
+    ) -> Callable[[Callable[..., Coroutine]], Callable[..., Coroutine]]:
         """
         Decorator factory to register a function as a message handler.
 

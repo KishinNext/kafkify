@@ -1,17 +1,16 @@
-# Welcome to MkDocs
+# Welcome to Kafkify
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+**Kafkify** is a lightweight, opinionated wrapper around `aiokafka` designed to simplify the integration of Kafka consumers and producers into Python applications, particularly those built with **FastAPI**.
 
-## Commands
+It provides a structured way to handle Kafka messages, manage configuration, and route messages to specific handlers based on topics and codes.
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+## Key Features
 
-## Project layout
+*   **Easy Configuration**: Uses Pydantic models for type-safe and clear configuration.
+*   **Routing**: Decorator-based routing similar to FastAPI for handling specific topics and message codes.
+*   **Resilience**: Built-in handling for rebalancing and offset management.
+*   **FastAPI Integration**: Designed to work seamlessly with FastAPI's lifespan events.
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+## Getting Started
+
+Check out the **User Guide** to understand how to use the Consumer and Producer components, or jump straight into the **Examples** to see them in action.
