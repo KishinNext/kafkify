@@ -6,15 +6,20 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "aiokafka>=0.13.0",
-    "faker>=37.12.0",
     "fastapi>=0.118.2",
     "fastavro>=1.12.1",
-    "locust>=2.43.1",
-    "mkdocs>=1.6.1",
-    "mkdocs-material>=9.7.1",
-    "mkdocstrings[python]>=1.0.3",
     "pydash>=8.0.5",
     "python-json-logger>=4.0.0",
     "pyyaml>=6.0.3",
     "uvicorn>=0.37.0",
+]
+
+[dependency-groups]
+dev = [
+    "faker>=37.12.0",
+    "locust>=2.43.1",
+]
+docs = [
+    "mkdocs-material>=9.7.1",
+    "mkdocstrings[python]>=1.0.3",
 ]
