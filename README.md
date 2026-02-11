@@ -1,170 +1,45 @@
-# Kafka Producer & Consumer - Arquitectura de Dos Servidores
+# Kafkify: Dual-Server Architecture Example
 
-Este proyecto implementa un sistema de productor y consumidor de Kafka usando FastAPI, con dos servidores separados que corren en paralelo sin bloquearse.
+This project demonstrates a robust Kafka Producer and Consumer implementation using FastAPI, separated into two independent servers to ensure non-blocking operations and scalability.
 
-## 🏗️ Arquitectura
+## 🏗️ Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                     Sistema Kafka                               │
-└─────────────────────────────────────────────────────────────────┘
+- **Producer Server (Port 8000):** REST API for sending messages to Kafka.
+- **Consumer Server (Port 8001):** Background service for continuous message consumption.
 
-┌─────────────────────────┐          ┌─────────────────────────┐
-│  Servidor Productor     │          │  Servidor Consumidor    │
-│  (Puerto 8000)          │          │  (Puerto 8001)          │
-│                         │          │                         │
-│  POST /producers/...    │          │  GET /consumers/status  │
-│  ↓                      │          │  GET /consumers/messages│
-│  Envía mensajes a Kafka │ ────────→│  ↓                      │
-└─────────────────────────┘          │  Consume en background  │
-                                     └─────────────────────────┘
-         ↓                                      ↑
-         └──────────→  Kafka Broker  ←──────────┘
-                    (Docker Container)
-```
+Both interact independently with a Kafka Broker (Docker).
 
-- **Servidor Productor** (puerto 8000): API REST para enviar mensajes a Kafka
-- **Servidor Consumidor** (puerto 8001): Consume mensajes en background de forma continua y los almacena en memoria
+## 📋 Prerequisites
 
-## 📋 Requisitos Previos
+- **Just** (task runner): `brew install just`
+- **jq** (JSON processor): `brew install jq`
+- **Python Dependencies**: `pip install uv && uv sync`
 
-### Instalar Just (task runner)
+## 🚀 Quick Start
 
-```bash
-brew install just
-```
+1.  **Start Kafka:**
+    ```bash
+    docker-compose up -d
+    ```
 
-### Instalar jq (para formatear JSON)
+2.  **Start Servers** (in separate terminals):
+    ```bash
+    just run-producer  # http://localhost:8000
+    just run-consumer  # http://localhost:8001
+    ```
 
-```bash
-brew install jq
-```
+3.  **Produce & Consume:**
+    ```bash
+    just create-people 10    # Generate 10 events
+    ```
 
-### Instalar dependencias Python
+## 🛠️ Key Commands
 
-```bash
-pip install uv
-uv sync
-```
+| Command | Description |
+| :--- | :--- |
+| `just health-producer` | Check Producer status |
+| `just health-consumer` | Check Consumer status |
 
-## 🚀 Cómo Usar
+## 🔌 API Documentation
 
-### 1. Iniciar Kafka (Docker)
-
-```bash
-docker-compose up -d
-```
-
-### 2. Iniciar los Servidores (en terminales separadas)
-
-**Terminal 1 - Productor:**
-
-```bash
-just run-producer
-# O directamente: python main_producer.py
-```
-
-El servidor del productor estará disponible en: http://localhost:8000
-
-**Terminal 2 - Consumidor:**
-
-```bash
-just run-consumer
-# O directamente: python main_consumer.py
-```
-
-El servidor del consumidor estará disponible en: http://localhost:8001
-
-> **Nota:** Ambos servidores deben estar corriendo al mismo tiempo para que funcionen correctamente.
-
-### 3. Verificar que los servidores están activos
-
-```bash
-# Health check del productor
-just health-producer
-
-# Health check del consumidor
-just health-consumer
-```
-
-### 4. Producir mensajes
-
-Crear 10 personas (mensajes):
-
-```bash
-just create-people 10
-```
-
-Crear 100 personas:
-
-```bash
-just create-people 100
-```
-
-### 5. Ver mensajes consumidos
-
-Ver estado del consumidor:
-
-```bash
-just consumer-status
-```
-
-Ver últimos 10 mensajes consumidos:
-
-```bash
-just consumer-messages
-```
-
-Ver últimos 50 mensajes:
-
-```bash
-just consumer-messages 50
-```
-
-## 🔌 Endpoints Disponibles
-
-### Productor (puerto 8000)
-
-- `GET /health-check` - Verificar estado del servidor
-- `POST /producers/basic_producer?number_of_people=N` - Crear N mensajes
-- `GET /docs` - Documentación interactiva Swagger
-
-### Consumidor (puerto 8001)
-
-- `GET /health-check` - Verificar estado del servidor
-- `GET /consumers/status` - Ver estado del consumidor
-- `GET /consumers/messages?limit=N` - Ver últimos N mensajes consumidos
-- `POST /consumers/stop` - Detener el consumidor temporalmente
-- `POST /consumers/start` - Reiniciar el consumidor
-- `GET /docs` - Documentación interactiva Swagger
-
-## 🛑 Detener todo
-
-```bash
-# Ctrl+C en ambas terminales para detener los servidores
-
-# Detener Kafka
-docker-compose down
-```
-
-## 📝 Comandos Just Disponibles
-
-```bash
-just run-producer         # Iniciar servidor productor
-just run-consumer         # Iniciar servidor consumidor
-just health-producer      # Health check productor
-just health-consumer      # Health check consumidor
-just create-people N      # Crear N mensajes
-just consumer-status      # Ver estado del consumidor
-just consumer-messages N  # Ver últimos N mensajes
-just consumer-stop        # Detener consumidor
-just consumer-start       # Iniciar consumidor
-```
-
-## 💡 Ventajas de esta Arquitectura
-
-1. **No hay bloqueos**: Cada servidor corre independientemente
-2. **Escalabilidad**: Puedes ejecutar múltiples instancias de cada servidor
-3. **Flexibilidad**: Puedes detener/iniciar cada servicio sin afectar al otro
-4. **Monitoreo**: APIs dedicadas para ver el estado de cada componente
-5. **Desarrollo**: Más fácil de debuggear y desarrollar cada parte por separado
+- [https://kishinnext.github.io/kafkify.github.io/](https://kishinnext.github.io/kafkify.github.io/)

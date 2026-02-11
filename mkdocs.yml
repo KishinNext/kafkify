@@ -38,7 +38,7 @@ nav:
     - Producer Example: examples/producer.md
 
 plugins:
-  - mkdocstrings:
+  - mkdocstrings
   - search
 
 markdown_extensions:
