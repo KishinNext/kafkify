@@ -562,8 +562,7 @@ dependencies = [
     { name = "locust" },
     { name = "mkdocs" },
     { name = "mkdocs-material" },
-    { name = "mkdocstrings" },
-    { name = "mkdocstrings-python" },
+    { name = "mkdocstrings", extra = ["python"] },
     { name = "pydash" },
     { name = "python-json-logger" },
     { name = "pyyaml" },
@@ -579,8 +578,7 @@ requires-dist = [
     { name = "locust", specifier = ">=2.43.1" },
     { name = "mkdocs", specifier = ">=1.6.1" },
     { name = "mkdocs-material", specifier = ">=9.7.1" },
-    { name = "mkdocstrings", specifier = ">=1.0.3" },
-    { name = "mkdocstrings-python", specifier = ">=2.0.2" },
+    { name = "mkdocstrings", extras = ["python"], specifier = ">=1.0.3" },
     { name = "pydash", specifier = ">=8.0.5" },
     { name = "python-json-logger", specifier = ">=4.0.0" },
     { name = "pyyaml", specifier = ">=6.0.3" },
@@ -781,6 +779,11 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/46/62/0dfc5719514115bf1781f44b1d7f2a0923fcc01e9c5d7990e48a05c9ae5d/mkdocstrings-1.0.3.tar.gz", hash = "sha256:ab670f55040722b49bb45865b2e93b824450fb4aef638b00d7acb493a9020434", size = 100946, upload-time = "2026-02-07T14:31:40.973Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/04/41/1cf02e3df279d2dd846a1bf235a928254eba9006dd22b4a14caa71aed0f7/mkdocstrings-1.0.3-py3-none-any.whl", hash = "sha256:0d66d18430c2201dc7fe85134277382baaa15e6b30979f3f3bdbabd6dbdb6046", size = 35523, upload-time = "2026-02-07T14:31:39.27Z" },
+]
+
+[package.optional-dependencies]
+python = [
+    { name = "mkdocstrings-python" },
 ]
 
 [[package]]
