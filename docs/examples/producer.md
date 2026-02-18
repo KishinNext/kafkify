@@ -12,31 +12,38 @@ The example consists of:
 
 In your `main.py`, you initialize the producer and store it in the app state so it can be accessed by dependencies.
 
-```python title="src/examples/producer_example/main.py" hl_lines="10-14 17 20"
+```python title="src/examples/producer_example/main.py" hl_lines="10-18 21 24"
 # ... imports ...
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # 1. Load Configuration
     kafka_config = config_manager.get_property("kafka")
-    producer_config = KafkaProducerConfig(...)
+    
+    # 2. Define Producer Config (Dictionary)
+    producer_config = {
+        "bootstrap_servers": kafka_config.get("bootstrap_servers", "localhost:9092"),
+        "client_id": "example-producer",
+        "acks": "all",
+        # Add other aiokafka supported options here
+    }
 
-    # 2. Create Producer Adapter
+    # 3. Create Producer Adapter
     producer = KafkaBaseProducerAdapter(
         config=producer_config,
         key_serializer=default_serializer,
         value_serializer=default_serializer,
     )
 
-    # 3. Start Producer
+    # 4. Start Producer
     await producer.start()
 
-    # 4. Store in App State
+    # 5. Store in App State
     app.state.producer = producer
 
     yield
 
-    # 5. Stop Producer
+    # 6. Stop Producer
     await producer.stop()
 
 app = FastAPI(lifespan=lifespan)

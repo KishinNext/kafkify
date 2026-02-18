@@ -43,7 +43,7 @@ sequenceDiagram
 
 To use the consumer:
 
-1.  **Configure**: Create an instance of `KafkaConsumerConfig`.
+1.  **Configure**: Create a configuration dictionary with attributes supported by aiokafka.
 2.  **Instantiate**: Create an instance of `KafkaBaseConsumerAdapter` with the config.
 3.  **Register Handlers**: Use the `@consumer.get` decorator or a `ConsumerRouter` to register functions to handle messages.
 4.  **Start**: Call `await consumer.start()` to connect to Kafka.
@@ -86,9 +86,16 @@ If the `code` field is missing or the value is not a dictionary, the message wil
 # Components
 
 ## Configuration
-The `KafkaConsumerConfig` Pydantic model defines the available configuration options for the consumer.
+The configuration is passed as a dictionary. It supports all arguments accepted by `aiokafka.AIOKafkaConsumer`.
 
-::: src.consumers.infrastructure.config.consumer_settings.KafkaConsumerConfig
+Common options include:
+- `bootstrap_servers`: list of 'host:port' strings or a single comma-separated string.
+- `group_id`: name of the consumer group.
+- `auto_offset_reset`: policy for initial offset ('earliest', 'latest').
+- `enable_auto_commit`: whether to auto-commit offsets.
+
+Refer to the [aiokafka documentation](https://aiokafka.readthedocs.io/en/stable/api.html#aiokafka.AIOKafkaConsumer) for a full list of parameters.
+
 
 ## Base Consumer
 The `BaseConsumer` defines the interface for all consumer implementations.
