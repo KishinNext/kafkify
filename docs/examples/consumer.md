@@ -75,7 +75,7 @@ async def lifespan(app: FastAPI):
 
     # 4. Start Consumer
     await consumer.start()
-    
+
     # 5. Start Listening Loop (in background)
     consumer_task = asyncio.create_task(consumer.listen())
 

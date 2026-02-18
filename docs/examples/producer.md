@@ -59,7 +59,7 @@ async def notify_person(
     person_data: dict
 ):
     producer = request.app.state.producer
-    
+
     # Send message
     await producer.send(
         topic="people-events",
@@ -69,7 +69,7 @@ async def notify_person(
         },
         key=person_data.get("id")
     )
-    
+
     return {"status": "Message sent"}
 ```
 

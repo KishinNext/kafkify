@@ -24,7 +24,7 @@ sequenceDiagram
     loop Event Loop
         Adapter->>Kafka: Poll Messages
         Kafka-->>Adapter: Return Batch
-        
+
         par Process Messages
             Adapter->>Router: Dispatch Message (Topic + Code)
             Router->>Handler: Execute Logic
@@ -77,7 +77,7 @@ For a handler registered with `@router.get({"topic": "my-topic", "codes": ["USER
 }
 ```
 
-If the `code` field is missing or the value is not a dictionary, the message will be routed to the default handler for that topic (if one exists). 
+If the `code` field is missing or the value is not a dictionary, the message will be routed to the default handler for that topic (if one exists).
 
 !!! warning "Be careful"
 

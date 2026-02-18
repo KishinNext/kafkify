@@ -37,7 +37,7 @@ async def lifespan(app: FastAPI):
         linger_ms=producer_config.get("linger_ms", 5),
         enable_idempotence=producer_config.get("enable_idempotence", True),
         retry_backoff_ms=producer_config.get("retry_backoff_ms", 100),
-        metadata_max_age_ms=producer_config.get("metadata_max_age_ms", 30000)
+        metadata_max_age_ms=producer_config.get("metadata_max_age_ms", 30000),
     )
 
     producer = KafkaBaseProducerAdapter(
