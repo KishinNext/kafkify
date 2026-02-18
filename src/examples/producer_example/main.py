@@ -21,7 +21,7 @@ log = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     kafka_config = config_manager.get_property("kafka")
-    
+
     if not kafka_config:
         log.error("Kafka producer configuration is missing.")
         raise RuntimeError("Kafka producer configuration is missing.")

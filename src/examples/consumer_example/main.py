@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
         raise RuntimeError("Kafka consumer configuration is missing.")
 
     consumer_config_data = kafka_config.get("consumer", {}).get("config", {})
-    
+
     # Defaults
     consumer_config = {
         "bootstrap_servers": kafka_config.get("bootstrap_servers", "localhost:9092"),
