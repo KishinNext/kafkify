@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, Optional
+from typing import Any, Callable, Dict, Optional
 
 from aiokafka import AIOKafkaProducer
 from aiokafka.errors import KafkaError
@@ -9,7 +9,6 @@ from src.producers.domain.ports.base_producer import (
     SerializableKey,
     SerializableValue,
 )
-from src.producers.infrastructure.config.producer_settings import KafkaProducerConfig
 
 log = logging.getLogger(__name__)
 
@@ -17,7 +16,7 @@ log = logging.getLogger(__name__)
 class KafkaBaseProducerAdapter(BaseProducer):
     def __init__(
         self,
-        config: KafkaProducerConfig,
+        config: Dict[str, Any],
         key_serializer: Optional[Callable] = None,
         value_serializer: Optional[Callable] = None,
     ):
@@ -31,26 +30,9 @@ class KafkaBaseProducerAdapter(BaseProducer):
 
         log.debug("Starting Kafka Producer...")
         self._producer = AIOKafkaProducer(
-            bootstrap_servers=self.config.bootstrap_servers,
-            client_id=self.config.client_id,
-            acks=self.config.acks,
-            request_timeout_ms=self.config.request_timeout_ms,
-            max_batch_size=self.config.max_batch_size,
-            linger_ms=self.config.linger_ms,
-            enable_idempotence=self.config.enable_idempotence,
+            **self.config,
             value_serializer=self._value_deserializer,
             key_serializer=self._key_deserializer,
-            **self.config.model_dump(
-                exclude={
-                    "bootstrap_servers",
-                    "client_id",
-                    "acks",
-                    "request_timeout_ms",
-                    "max_batch_size",
-                    "linger_ms",
-                    "enable_idempotence",
-                }
-            ),
         )
         await self._producer.start()
         log.debug("Kafka Producer started successfully.")

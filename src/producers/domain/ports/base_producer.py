@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Dict, List, Optional, TypeAlias, Union
 
-from src.producers.infrastructure.config.producer_settings import KafkaProducerConfig
-
 SerializableKey: TypeAlias = Optional[Union[str, int, float, bytes]]
 SerializableValue: TypeAlias = Union[
     str, int, float, bytes, Dict[str, Any], List[Dict[str, Any]]
@@ -16,7 +14,7 @@ class BaseProducer(ABC):
 
     def __init__(
         self,
-        config: KafkaProducerConfig,
+        config: Dict[str, Any],
         key_deserializer: Optional[Callable] = None,
         value_deserializer: Optional[Callable] = None,
     ):
