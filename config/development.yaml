@@ -17,7 +17,6 @@ kafka:
       group_id: "example-consumer-group"
       auto_offset_reset: "earliest"
       enable_auto_commit: false
-      auto_offset_reset: "earliest"
       isolation_level: "read_committed"
       max_poll_interval_ms: 300000
       retry_backoff_ms: 2000

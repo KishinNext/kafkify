@@ -30,7 +30,6 @@ class BaseConsumer(ABC):
         self._key_deserializer = key_deserializer
         self._value_deserializer = value_deserializer
 
-
     @abstractmethod
     def get(
         self,

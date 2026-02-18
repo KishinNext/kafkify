@@ -13,9 +13,10 @@ class KafkaConsumerConfig(BaseModel):
         isolation_level (str): Isolation level for consuming messages.
         max_poll_interval_ms (int): Maximum delay between invocations of poll().
         retry_backoff_ms (int): Time to wait before retrying a failed fetch.
-    
+
     Adds extra fields to allow future extensions without breaking changes.
     """
+
     model_config = ConfigDict(extra="allow")
 
     bootstrap_servers: str = Field(

@@ -56,7 +56,7 @@ async def lifespan(app: FastAPI):
     yield
 
     await consumer.stop()
-    
+
     try:
         await consumer_task
     except asyncio.CancelledError:
