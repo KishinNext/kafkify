@@ -42,4 +42,4 @@ Both interact independently with a Kafka Broker (Docker).
 
 ## 🔌 API Documentation
 
-- [https://kishinnext.github.io/kafkify.github.io/](https://kishinnext.github.io/kafkify.github.io/)
+- [https://kishinnext.github.io/kafkify/](https://kishinnext.github.io/kafkify/)

@@ -8,7 +8,6 @@ from fastapi import FastAPI
 from src.consumers.infrastructure.adapters.base_consumer_adapter import (
     KafkaBaseConsumerAdapter,
 )
-from src.consumers.infrastructure.config.consumer_settings import KafkaConsumerConfig
 from src.examples.consumer_example.entrypoints.api.routers.events.router import (
     main_event_router,
 )
@@ -23,21 +22,24 @@ log = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     kafka_config = config_manager.get_property("kafka")
-    consumer_config = kafka_config.get("consumer", {}).get("config", {})
-
     if not kafka_config:
         log.error("Kafka consumer configuration is missing.")
         raise RuntimeError("Kafka consumer configuration is missing.")
 
-    consumer_config = KafkaConsumerConfig(
-        bootstrap_servers=kafka_config.get("bootstrap_servers", "localhost:9092"),
-        group_id=consumer_config.get("group_id", "example-consumer-group"),
-        enable_auto_commit=consumer_config.get("enable_auto_commit", False),
-        auto_offset_reset=consumer_config.get("auto_offset_reset", "earliest"),
-        isolation_level=consumer_config.get("isolation_level", "read_committed"),
-        max_poll_interval_ms=consumer_config.get("max_poll_interval_ms", 300000),
-        retry_backoff_ms=consumer_config.get("retry_backoff_ms", 2000),
-    )
+    consumer_config_data = kafka_config.get("consumer", {}).get("config", {})
+
+    # Defaults
+    consumer_config = {
+        "bootstrap_servers": kafka_config.get("bootstrap_servers", "localhost:9092"),
+        "group_id": "example-consumer-group",
+        "enable_auto_commit": False,
+        "auto_offset_reset": "earliest",
+        "isolation_level": "read_committed",
+        "max_poll_interval_ms": 300000,
+        "retry_backoff_ms": 2000,
+    }
+
+    consumer_config.update(consumer_config_data)
 
     consumer = KafkaBaseConsumerAdapter(
         config=consumer_config,

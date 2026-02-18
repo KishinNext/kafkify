@@ -7,7 +7,6 @@ from fastapi import FastAPI
 from src.producers.infrastructure.adapters.base_producer_adapter import (
     KafkaBaseProducerAdapter,
 )
-from src.producers.infrastructure.config.producer_settings import KafkaProducerConfig
 from src.examples.producer_example.entrypoints.api.routers.person_notifier_service import (
     router as person_notifier_router,
 )
@@ -22,23 +21,27 @@ log = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     kafka_config = config_manager.get_property("kafka")
-    producer_config = kafka_config.get("producer", {}).get("config", {})
 
     if not kafka_config:
         log.error("Kafka producer configuration is missing.")
         raise RuntimeError("Kafka producer configuration is missing.")
 
-    producer_config = KafkaProducerConfig(
-        bootstrap_servers=kafka_config.get("bootstrap_servers", "localhost:9092"),
-        client_id=producer_config.get("client_id", "example-producer"),
-        acks=producer_config.get("acks", "all"),
-        request_timeout_ms=producer_config.get("request_timeout_ms", 40000),
-        max_batch_size=producer_config.get("max_batch_size", 16384),
-        linger_ms=producer_config.get("linger_ms", 5),
-        enable_idempotence=producer_config.get("enable_idempotence", True),
-        retry_backoff_ms=producer_config.get("retry_backoff_ms", 100),
-        metadata_max_age_ms=producer_config.get("metadata_max_age_ms", 30000),
-    )
+    producer_config_data = kafka_config.get("producer", {}).get("config", {})
+
+    # Defaults
+    producer_config = {
+        "bootstrap_servers": kafka_config.get("bootstrap_servers", "localhost:9092"),
+        "client_id": "example-producer",
+        "acks": "all",
+        "request_timeout_ms": 40000,
+        "max_batch_size": 16384,
+        "linger_ms": 5,
+        "enable_idempotence": True,
+        "retry_backoff_ms": 100,
+        "metadata_max_age_ms": 30000,
+    }
+
+    producer_config.update(producer_config_data)
 
     producer = KafkaBaseProducerAdapter(
         config=producer_config,

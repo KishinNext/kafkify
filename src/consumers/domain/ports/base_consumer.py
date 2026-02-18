@@ -3,8 +3,6 @@ from typing import Any, Callable, Coroutine, Dict, Optional
 
 from aiokafka import ConsumerRecord
 
-from src.consumers.infrastructure.config.consumer_settings import KafkaConsumerConfig
-
 
 class BaseConsumer(ABC):
     """
@@ -14,7 +12,7 @@ class BaseConsumer(ABC):
 
     def __init__(
         self,
-        config: KafkaConsumerConfig,
+        config: Dict[str, Any],
         key_deserializer: Optional[Callable] = None,
         value_deserializer: Optional[Callable] = None,
     ):

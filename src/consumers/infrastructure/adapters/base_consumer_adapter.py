@@ -2,7 +2,7 @@ import asyncio
 import logging
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Callable, Coroutine, Dict, List, Optional, Set
+from typing import Any, Callable, Coroutine, Dict, List, Optional, Set
 
 from aiokafka import AIOKafkaConsumer, ConsumerRecord, TopicPartition
 from aiokafka.errors import (
@@ -14,9 +14,6 @@ from aiokafka.errors import (
 from src.consumers.domain.ports.base_consumer import BaseConsumer
 from src.consumers.infrastructure.adapters.base_rebalance_listener import (
     RebalanceHandler,
-)
-from src.consumers.infrastructure.config.consumer_settings import (
-    KafkaConsumerConfig,
 )
 
 log = logging.getLogger(__name__)
@@ -39,7 +36,7 @@ class KafkaBaseConsumerAdapter(BaseConsumer):
 
     def __init__(
         self,
-        config: KafkaConsumerConfig,
+        config: Dict[str, Any],
         key_deserializer: Optional[Callable] = None,
         value_deserializer: Optional[Callable] = None,
     ):
@@ -107,15 +104,9 @@ class KafkaBaseConsumerAdapter(BaseConsumer):
 
         log.debug("Starting Kafka Consumer Manager...")
         self._consumer = AIOKafkaConsumer(
-            bootstrap_servers=self.config.bootstrap_servers,
-            group_id=self.config.group_id,
-            enable_auto_commit=self.config.enable_auto_commit,
-            auto_offset_reset=self.config.auto_offset_reset,
-            isolation_level=self.config.isolation_level,
+            **self.config,
             key_deserializer=self._key_deserializer,
             value_deserializer=self._value_deserializer,
-            max_poll_interval_ms=self.config.max_poll_interval_ms,
-            retry_backoff_ms=self.config.retry_backoff_ms,
         )
         await self._consumer.start()
 

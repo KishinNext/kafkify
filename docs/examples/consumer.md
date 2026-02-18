@@ -54,34 +54,42 @@ main_event_router.include_router(purchase_event.router)
 
 In your `main.py`, you initialize the consumer and register the router.
 
-```python title="src/examples/consumer_example/main.py" hl_lines="10-14 17 20 23"
+```python title="src/examples/consumer_example/main.py" hl_lines="10-18 21 24 27"
 # ... imports ...
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # 1. Load Configuration
     kafka_config = config_manager.get_property("kafka")
-    consumer_config = KafkaConsumerConfig(...)
+    
+    # 2. Define Consumer Config (Dictionary)
+    consumer_config = {
+        "bootstrap_servers": kafka_config.get("bootstrap_servers", "localhost:9092"),
+        "group_id": "example-consumer-group",
+        "auto_offset_reset": "earliest",
+        "enable_auto_commit": False,
+        # Add other aiokafka supported options here
+    }
 
-    # 2. Create Consumer Adapter
+    # 3. Create Consumer Adapter
     consumer = KafkaBaseConsumerAdapter(
         config=consumer_config,
         key_deserializer=default_deserializer,
         value_deserializer=default_deserializer,
     )
 
-    # 3. Register Handlers
+    # 4. Register Handlers
     main_event_router.register_handlers(consumer)
 
-    # 4. Start Consumer
+    # 5. Start Consumer
     await consumer.start()
 
-    # 5. Start Listening Loop (in background)
+    # 6. Start Listening Loop (in background)
     consumer_task = asyncio.create_task(consumer.listen())
 
     yield
 
-    # 6. Stop Consumer (graceful shutdown)
+    # 7. Stop Consumer (graceful shutdown)
     await consumer.stop()
     try:
         await consumer_task
